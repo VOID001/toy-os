@@ -8,6 +8,7 @@
 * Enter the 32bit Protect Mode GDT
 
 ### After Loading The OS
+* System Kernel Call
 * Virtual memory managment
 * Driver for Keyboard, VGA
 * FileSystem Management
