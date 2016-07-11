@@ -1,4 +1,5 @@
 #include "print.h"
+#include "interrupt.h"
 
 int main(void)
 {
@@ -12,6 +13,12 @@ int main(void)
     set_cursor(0);
     printf("%s\n","printf(\"printftest %d %d %s %u %x %c %%\",10,-10,\"haha\",-10,10,'c')");
     printf("printftest %d %d %s %u %x %c %%",10,-10,"haha",-10,10,'c');
+
+    //clear_screen();
+
+    init_idt();
+    init_pic();
+    //sti();
     while(1) ;
     return 0;
 }

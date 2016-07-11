@@ -1,8 +1,16 @@
+OBJS = kernel.o \
+	   memory.o \
+	   print.o \
+	   interrupt.o \
+	   idt.o \
+
+
 OBJCOPY=objcopy
 AS=as
 QEMU=qemu-system-i386
 LD=ld
-CFLAGS = -fno-pic -static -fno-builtin -fno-strict-aliasing -fvar-tracking -fvar-tracking-assignments -O0 -g -Wall -MD -gdwarf-2 -m32 -Werror -fno-omit-frame-pointer
+#CFLAGS = -fno-pic -static -fno-builtin -fno-strict-aliasing -fvar-tracking -fvar-tracking-assignments -O0 -g -Wall -MD -gdwarf-2 -m32 -Werror -fno-omit-frame-pointer
+CFLAGS = -m32 -fno-builtin -g
 CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
 LDFLAGS += -m $(shell $(LD) -V | grep elf_i386 2>/dev/null)
 ASFLAGS += --32
@@ -32,14 +40,14 @@ boot.bin: boot.o boot_asm.o
 	- ./sign.pl boot.bin
 
 boot: toy-os.img
-	- $(QEMU) toy-os.img -m 10000
+	- $(QEMU) toy-os.img -m 1000
 
 boot-dbg: toy-os.img
-	- $(QEMU) -s -S toy-os.img -m 10000
+	- $(QEMU) -s -S toy-os.img -m 1000
 
-kernel.bin: kernel.o print.o memory.o
-	- $(LD) $(LDFLAGS) -Ttext 0x200000 -o kernel.bin kernel.o print.o memory.o
-	- $(OBJCOPY) -Obinary kernel.bin
+kernel.bin: $(OBJS)
+	- $(LD) $(LDFLAGS) -Ttext 0x200000 -Tdata 0x400000 -o kernel.out $(OBJS)
+	- $(OBJCOPY) -Obinary kernel.out kernel.bin
 
 toy-os.img: kernel.bin boot.bin 
 	- cat boot.bin kernel.bin > toy-os.img

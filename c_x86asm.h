@@ -28,4 +28,14 @@ static inline void insl(int port, void *addr, int cnt)
 
 }
 
+static inline void lidt(uint addr)
+{
+    asm volatile("lidt (%0)" : : "r" (addr));
+}
+
+static inline void sti(void)
+{
+    asm volatile("sti" : :);
+}
+
 #endif

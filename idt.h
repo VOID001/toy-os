@@ -4,6 +4,8 @@
 
 #include "type.h"
 
+#define TYPE_INTGATE 0x8E
+
 typedef struct idtr {
     ushort limit;
     uint base;
@@ -18,6 +20,10 @@ typedef struct gatedesc {
 }__attribute__((packed)) Gatedesc;
 
 void init_idt(void);
-void set_gatedesc(Gatedesc *entry, uint offset, ushort select, uchar type_attr, uchar dpl);
+void set_gatedesc(Gatedesc *entry, uint offset, ushort select, uchar type_attr);
+
+extern void handler_int21(void);
+extern void handler_int28(void);
+extern void handler_stub(void);
 
 #endif
