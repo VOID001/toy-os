@@ -4,9 +4,9 @@
 
 #include "type.h"
 
-typedef struct idt {
+typedef struct idtr {
     ushort limit;
-    ushort base;
+    uint base;
 }__attribute__((packed)) IDTdesc;
 
 typedef struct gatedesc {
