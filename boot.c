@@ -13,7 +13,10 @@ void bootmain(void)
     uchar *dst = (uchar *)OS_START_AT;
     // Load the kernel into memory
 
-    readseg(dst, 4096, 0);
+    // Make sure bytes you load is larger or equal
+    // than the os image ! DO NOT Think it's a JOKE
+    // I stuck here for hours !
+    readseg(dst, 409600, 0);
 
     // Call entry point
     entry = (int(*) (void))OS_START_AT;

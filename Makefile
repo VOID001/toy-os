@@ -9,11 +9,19 @@ OBJCOPY=objcopy
 AS=as
 QEMU=qemu-system-i386
 LD=ld
-#CFLAGS = -fno-pic -static -fno-builtin -fno-strict-aliasing -fvar-tracking -fvar-tracking-assignments -O0 -g -Wall -MD -gdwarf-2 -m32 -Werror -fno-omit-frame-pointer
-CFLAGS = -m32 -fno-builtin -g
+CFLAGS = -fno-pic -static -fno-builtin -fno-strict-aliasing -fvar-tracking -fvar-tracking-assignments -O0 -g -Wall -MD -gdwarf-2 -m32 -Werror -fno-omit-frame-pointer
+#CFLAGS = -m32 -fno-builtin -g
 CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
 LDFLAGS += -m $(shell $(LD) -V | grep elf_i386 2>/dev/null)
 ASFLAGS += --32
+
+CRTI_OBJ=$(shell $(CC) $(CFLAGS) -print-file-name=crti.o)
+CRTBEGIN_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtbegin.o)
+CRTEND_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtend.o)
+CRTN_OBJ=$(shell $(CC) $(CFLAGS) -print-file-name=crtn.o)
+
+OBJ_LINK_LIST:=$(CRTI_OBJ) $(CRTBEGIN_OBJ) $(OBJS) $(CRTEND_OBJ) $(CRTN_OBJ)
+
 STRIP = strip
 
 
@@ -46,11 +54,11 @@ boot-dbg: toy-os.img
 	- $(QEMU) -s -S toy-os.img -m 1000
 
 kernel.bin: $(OBJS)
-	- $(LD) $(LDFLAGS) -Ttext 0x200000 -Tdata 0x400000 -o kernel.out $(OBJS)
+	- $(LD) $(LDFLAGS) -T kernel.ld -o kernel.out $(OBJS)
 	- $(OBJCOPY) -Obinary kernel.out kernel.bin
 
 toy-os.img: kernel.bin boot.bin 
 	- cat boot.bin kernel.bin > toy-os.img
 
 clean:
-	- rm *.bin *.o
+	- rm *.bin *.o *.out

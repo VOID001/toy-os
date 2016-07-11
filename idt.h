@@ -9,7 +9,7 @@
 typedef struct idtr {
     ushort limit;
     uint base;
-}__attribute__((packed)) IDTdesc;
+} IDTdesc;
 
 typedef struct gatedesc {
     ushort offset0_15;
@@ -17,7 +17,7 @@ typedef struct gatedesc {
     uchar zero;
     uchar type_attr;
     ushort offset16_31;
-}__attribute__((packed)) Gatedesc;
+} Gatedesc;
 
 void init_idt(void);
 void set_gatedesc(Gatedesc *entry, uint offset, ushort select, uchar type_attr);
