@@ -11,7 +11,7 @@ void init_idt(void)
 
     //Init idtdesc first
     idtdesc.base = (uint)idt;         // Base addr
-    idtdesc.limit = 0xFF * 8;       // 256 entries
+    idtdesc.limit = 0x100 * 8 - 1;       // 256 entries
 
     printf("\nThe idt address is %x\n", idt);
     printf("The handler_stub address is %x\n", handler_stub);
