@@ -17,15 +17,6 @@ _start:
 
 	mov $string, %bx # We must add a '$' before the label, to specify we want JUST the label addr not the content in this addr
 
-# A loop to print the string
-loop:
-	mov (%bx), %al
-	cmp $0x00, %al
-	je  to32
-	add $0x01, %bx
-	int $0x10
-	jmp loop
-
 to32:
 	cli
 	lgdt gdt_descriptor
@@ -83,16 +74,9 @@ init_pm:
 	mov %ax, %gs
 	mov %ax, %es
 
-# Try to print a character on screen
+# call bootmain in boot.c to load the OS into memory
+call bootmain
 
-mov $VIDEO_MEM, %edx
-
-print_char_pm:
-	mov $'@', %al
-	mov $THEME, %ah
-	mov %ax, (%edx)
-	add $2, %edx
-	jmp print_char_pm
-
-looop:
-	jmp looop
+# Now just do a forever loop when OS return
+forever:
+	jmp forever
