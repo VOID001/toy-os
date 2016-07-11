@@ -9,15 +9,15 @@ void waitdisk();
 
 void bootmain(void)
 {
+    int (*entry)(void);
     uchar *dst = (uchar *)OS_START_AT;
     // Load the kernel into memory
 
     readseg(dst, 4096, 0);
 
-    // TODO: Call kernel function
-    // now just return to boot.s
-    // and do a forever loop
-    //
+    // Call entry point
+    entry = (int(*) (void))OS_START_AT;
+    entry();
     return ;
 }
 

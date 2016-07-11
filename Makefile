@@ -21,17 +21,28 @@ boot.o: boot.c
 boot_asm.o: boot.s
 	- $(AS) $(ASFLAGS) -o boot_asm.o boot.s
 
+.o: .c
+	- $(CC) $(CFLAGS) -c $<
+
+
 boot.bin: boot.o boot_asm.o
 	- $(LD) $(LDFLAGS) -Ttext 0x7c00 -o boot.bin boot_asm.o boot.o
 	- $(STRIP) boot.bin
 	- $(OBJCOPY) -O binary boot.bin
 	- ./sign.pl boot.bin
 
-boot: boot.bin
-	- $(QEMU) boot.bin -m 10000
+boot: toy-os.img
+	- $(QEMU) toy-os.img -m 10000
 
-boot-dbg: boot.bin
-	- $(QEMU) -s -S boot.bin -m 10000
+boot-dbg: toy-os.img
+	- $(QEMU) -s -S toy-os.img -m 10000
+
+kernel.bin: kernel.o print.o memory.o
+	- $(LD) $(LDFLAGS) -Ttext 0x200000 -o kernel.bin kernel.o print.o memory.o
+	- $(OBJCOPY) -Obinary kernel.bin
+
+toy-os.img: kernel.bin boot.bin 
+	- cat boot.bin kernel.bin > toy-os.img
 
 clean:
 	- rm *.bin *.o
